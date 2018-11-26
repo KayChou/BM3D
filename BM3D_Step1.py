@@ -4,7 +4,7 @@ import numpy as np
 block_size = 8
 search_window_size = 50
 search_step = 3
-match_threshold = 100
+match_threshold = 50
 max_match_block = 8
 filter_3D_threshold = 70
 beta_Kaiser = 2.0

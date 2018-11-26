@@ -99,7 +99,7 @@ def wiener_filter(similar_blks_dct, noise_blk_dct):
 			# norm2 = np.linalg.norm(pixel_dct, 2)
 			weight = norm2 / (norm2 + sigma**2)
 			if weight != 0:
-				wiener_weight[i, j] = 1./(weight**2 * sigma**2)
+				wiener_weight[i, j] = 1/(weight**2 + sigma**2)
 
 			# process origin image(noise_blk_dct)
 			temp = noise_blk_dct[:, i, j]
@@ -117,6 +117,8 @@ def Aggregation_wiener(similar_blks_dct, wiener_weight, blks_pos, image_base, we
 		blk_idct = wiener_weight*cv2.idct(similar_blks_dct[i, :, :])
 		image_base[x:x+shape[1], y:y+shape[2]] += blk_idct
 		weight_base[x:x+shape[1], y:y+shape[2]] += wiener_weight
+		# weight_base[np.where(weight_base==0)] = 1
+
 
 
 
@@ -127,7 +129,7 @@ def BM3D_step2(image, noise_image):
 	width, height = image.shape
 
 	image_base = np.zeros(image.shape)
-	weight_base = np.ones(image.shape)
+	weight_base = np.zeros(image.shape)
 	k = np.matrix(np.kaiser(block_size, beta_Kaiser))
 	kaiser = np.array(k.T*k)
 
@@ -138,6 +140,7 @@ def BM3D_step2(image, noise_image):
 			blks_dct, blks_n_dct, blks_pos, idx = block_matching(image, noise_image, [i, j])
 			blks_dct, wiener_weight = wiener_filter(blks_dct, blks_n_dct)
 			Aggregation_wiener(blks_dct, wiener_weight, blks_pos, image_base, weight_base)
+
 	image_base[:, :] = image_base[:, :] / weight_base[:, :]
 	cv2.imwrite("BM3D_step2.jpg", image_base)
 			# print(blks_dct.shape, blks_n_dct.shape)

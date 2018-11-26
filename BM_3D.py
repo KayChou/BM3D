@@ -6,7 +6,7 @@ from BM3D_Step2 import BM3D_step2
 
 
 def main():
-	filename = 'BM3D_step1.jpg'
+	filename = 'lena.jpg'
 	origin_image = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
 	print("Source Image: ", origin_image.shape)
 
