@@ -98,6 +98,7 @@ def wiener_filter(similar_blks_dct, noise_blk_dct):
 			correspond_pixel = similar_blks_dct[:, i, j]
 			pixel_dct = np.matrix(cv2.dct(correspond_pixel))
 			norm2 = np.float(pixel_dct.T * pixel_dct)
+			# print(norm2)
 			# norm2 = np.linalg.norm(pixel_dct, 2)
 			weight = norm2 / (norm2 + sigma**2)
 			if weight != 0:
@@ -120,8 +121,6 @@ def Aggregation_wiener(similar_blks_dct, wiener_weight, blks_pos, image_base, we
 		image_base[x:x+shape[1], y:y+shape[2]] += blk_idct
 		weight_base[x:x+shape[1], y:y+shape[2]] += wiener_weight
 		# weight_base[np.where(weight_base==0)] = 1
-
-
 
 
 # =======================================================-======
