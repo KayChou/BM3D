@@ -2,10 +2,10 @@ import cv2
 import numpy as np
 
 block_size = 8
-search_window_size = 50
+search_window_size = 39
 search_step = 3
-match_threshold = 50
-max_match_block = 8
+match_threshold = 2500
+max_match_block = 16
 filter_3D_threshold = 70
 beta_Kaiser = 2.0
 
@@ -43,9 +43,10 @@ def block_matching(image, block_coord):
 	img_block_dct = cv2.dct(img_block.astype(np.float64))
 
 	blk_num = int((search_window_size - block_size)/search_step)
+	# print(blk_num)
 	window_x, window_y = get_search_window(image, block_coord)
 
-	similar_blks_dct = np.zeros([blk_num**2, block_size, block_size])
+	similar_blks_dct = np.zeros([blk_num**2, block_size, block_size], dtype=float)
 	similar_blks_pos = np.zeros([blk_num**2, 2], dtype=int)
 	blk_distances = np.zeros(blk_num**2)
 
@@ -59,6 +60,7 @@ def block_matching(image, block_coord):
 			temp_blk_dct = cv2.dct(temp_blk.astype(np.float64))
 
 			distance = np.linalg.norm(img_block_dct - temp_blk_dct)
+			# print(distance)
 
 			# Threshold filtering
 			if distance < match_threshold:
@@ -69,7 +71,8 @@ def block_matching(image, block_coord):
 
 	# Because OpenCV cannot do odd-numbered DCT transforms
 	# so need to limit the value of w
-	if match_index >= max_match_block:
+	# print(match_index)
+	if match_index > max_match_block:
 		match_index = max_match_block
 
 	if match_index%2 == 1:
@@ -77,7 +80,8 @@ def block_matching(image, block_coord):
 	if match_index == 0:
 		match_index = 2
 
-	blk_distances = blk_distances[0:match_index]
+	# blk_distances = blk_distances[0:match_index]
+	# sort = blk_distances.argsort()
 	sort = blk_distances.argsort()
 
 	final_blks_dct = np.zeros([match_index, block_size, block_size])

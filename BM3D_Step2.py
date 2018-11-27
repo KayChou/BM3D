@@ -3,12 +3,12 @@ import numpy as np
 from BM3D_Step1 import coord_boundary, get_search_window
 
 block_size = 8
-search_window_size = 30
+search_window_size = 39
 search_step = 3
-match_threshold = 10
-max_match_block = 8
+match_threshold = 20
+max_match_block = 2
 beta_Kaiser = 2.0
-sigma = 10
+sigma = 25
 
 
 # ==============================================================
@@ -43,6 +43,7 @@ def block_matching(image, noise_image, block_coord):
 			temp_blk_dct = cv2.dct(temp_blk.astype(np.float64))
 
 			distance = np.linalg.norm(img_block_dct - temp_blk_dct)
+			#print(distance)
 
 			# Threshold filtering
 			if distance < match_threshold:
@@ -53,7 +54,7 @@ def block_matching(image, noise_image, block_coord):
 
 	# Because OpenCV cannot do odd-numbered DCT transforms
 	# so need to limit the value of w
-	if match_index >= max_match_block:
+	if match_index > max_match_block:
 		match_index = max_match_block
 
 	if match_index%2 == 1:
@@ -61,7 +62,7 @@ def block_matching(image, noise_image, block_coord):
 	if match_index == 0:
 		match_index = 2
 
-	blk_distances = blk_distances[0:match_index]
+	# blk_distances = blk_distances[0:match_index]
 	sort = blk_distances.argsort()
 
 	# init variables to be returned
@@ -81,6 +82,7 @@ def block_matching(image, noise_image, block_coord):
 		final_noise_blks[i, :, :] = cv2.dct(noise_blk.astype(np.float64))
 
 		final_blks_pos[i, :] = similar_blks_pos[sort[i-1], :]
+
 	return final_blks_dct, final_noise_blks, final_blks_pos, match_index+1
 
 
