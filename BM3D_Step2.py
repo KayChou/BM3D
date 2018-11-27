@@ -5,10 +5,10 @@ from BM3D_Step1 import coord_boundary, get_search_window
 block_size = 8
 search_window_size = 39
 search_step = 3
-match_threshold = 20
-max_match_block = 2
+match_threshold = 200
+max_match_block = 8
 beta_Kaiser = 2.0
-sigma = 25
+sigma = 25.0
 
 
 # ==============================================================
@@ -66,7 +66,7 @@ def block_matching(image, noise_image, block_coord):
 	sort = blk_distances.argsort()
 
 	# init variables to be returned
-	final_blks_dct = np.zeros([match_index, block_size, block_size])
+	final_blks_dct = np.zeros([match_index, block_size, block_size], dtype=float)
 	final_noise_blks = np.zeros([match_index, block_size, block_size])
 	final_blks_pos = np.zeros([match_index, 2], dtype=int)
 
@@ -86,7 +86,7 @@ def block_matching(image, noise_image, block_coord):
 	return final_blks_dct, final_noise_blks, final_blks_pos, match_index+1
 
 
-# =======================================================-======
+# ==============================================================
 # 3D Wiener filtering
 # ==============================================================
 def wiener_filter(similar_blks_dct, noise_blk_dct):
@@ -96,18 +96,16 @@ def wiener_filter(similar_blks_dct, noise_blk_dct):
 	for i in range(shape[1]):
 		for j in range(shape[2]):
 			correspond_pixel = similar_blks_dct[:, i, j]
-			pixel_dct = np.matrix(cv2.dct(correspond_pixel))
-			norm2 = np.float(pixel_dct.T * pixel_dct)
-			# print(norm2)
-			# norm2 = np.linalg.norm(pixel_dct, 2)
+			correspond_pixel = np.matrix(correspond_pixel)
+			norm2 = np.float(correspond_pixel * correspond_pixel.T)
 			weight = norm2 / (norm2 + sigma**2)
-			if weight != 0:
-				wiener_weight[i, j] = 1/(weight**2 + sigma**2)
 
-			# process origin image(noise_blk_dct)
-			temp = noise_blk_dct[:, i, j]
-			temp = weight*cv2.dct(temp)
-			similar_blks_dct[:, i, j] = cv2.idct(temp)[0]
+			if weight != 0:
+				wiener_weight[i, j] = 1/(weight**2)
+
+			# wiener filter
+			temp = weight*noise_blk_dct[:, i, j]
+			similar_blks_dct[:, i, j] = temp
 
 	return similar_blks_dct, wiener_weight
 
@@ -144,8 +142,3 @@ def BM3D_step2(image, noise_image):
 
 	image_base[:, :] = image_base[:, :] / weight_base[:, :]
 	cv2.imwrite("BM3D_step2.jpg", image_base)
-			# print(blks_dct.shape, blks_n_dct.shape)
-			# blks_dct, nonzero_num = filter_3D(blks_dct)
-			# Aggregation(blks_dct, blks_pos, nonzero_num, image_base, weight_base, kaiser)
-	# image_base[:, :] = image_base[:, :]/weight_base[:, :]
-	# cv2.imwrite("BM3D_step1.jpg", image_base)
