@@ -5,7 +5,7 @@ import numpy
 cv2.setUseOptimized(True)
 
 # Parameters initialization
-sigma = 25
+sigma = 2.5
 
 Second_Match_threshold = 400           # 用于计算block之间相似度的阈值
 Step2_max_matched_cnt = 32
@@ -152,6 +152,7 @@ def Step2_3DFiltering(_Similar_Bscs, _Similar_Imgs):
     Wiener_wight = numpy.zeros((m_Shape[1], m_Shape[2]), dtype=float)
 
     for i in range(m_Shape[1]):
+        
         for j in range(m_Shape[2]):
             tem_vector = _Similar_Bscs[:, i, j]
             tem_Vct_Trans = numpy.matrix(cv2.dct(tem_vector))
@@ -197,7 +198,7 @@ def BM3D_2nd_step(_basicImg, _noisyImg):
     m_img, m_Wight, m_Kaiser = init(_noisyImg, block_Size, Beta_Kaiser)
 
     for i in range(int(Width_num+2)):
-        print("processing line:", i)
+        print("step2 line:", i)
         for j in range(int(Height_num+2)):
             m_blockPoint = Locate_blk(i, j, blk_step, block_Size, width, height)
             Similar_Blks, Similar_Imgs, Positions, Count = Step2_fast_match(_basicImg, _noisyImg, m_blockPoint)

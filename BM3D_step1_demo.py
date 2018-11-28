@@ -10,7 +10,7 @@ Threshold_Hard3D = 2.7*sigma           # Threshold for Hard Thresholding
 First_Match_threshold = 2500             # 用于计算block之间相似度的阈值
 Step1_max_matched_cnt = 16              # 组最大匹配的块数
 Step1_Blk_Size = 8                     # block_Size即块的大小，8*8
-Step1_Blk_Step = 3                      # Rather than sliding by one pixel to every next reference block, use a step of Nstep pixels in both horizontal and vertical directions.
+Step1_Blk_Step = 3                    # Rather than sliding by one pixel to every next reference block, use a step of Nstep pixels in both horizontal and vertical directions.
 Step1_Search_Step = 3                   # 块的搜索step
 Step1_Search_Window = 39                # Search for candidate matching blocks in a local neighborhood of restricted size NS*NS centered
 Beta_Kaiser = 2.0
@@ -181,6 +181,7 @@ def BM3D_1st_step(_noisyImg):
 
     # 开始逐block的处理,+2是为了避免边缘上不够
     for i in range(int(Width_num+2)):
+        print("step1 line:", i)
         for j in range(int(Height_num+2)):
             # m_blockPoint当前参考图像的顶点
             m_blockPoint = Locate_blk(i, j, blk_step, block_Size, width, height)       # 该函数用于保证当前的blk不超出图像范围
@@ -191,4 +192,4 @@ def BM3D_1st_step(_noisyImg):
     basic = numpy.matrix(Basic_img, dtype=int)
     basic.astype(numpy.uint8)
 
-    cv2.imwrite("BM3D_step1.jpg", basic)
+    cv2.imwrite("BM3D_step1_demo.jpg", basic)
