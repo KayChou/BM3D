@@ -11,10 +11,10 @@ import skimage
 def main():
 
 	filename = 'lena.jpg'
-	noise_mode = 'salt'
+	noise_mode = 'gaussian'
 
 	origin_image = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
-	noise_image = skimage.util.random_noise(origin_image/256.0, mode=noise_mode, seed=42)
+	noise_image = skimage.util.random_noise(origin_image/256.0, mode=noise_mode)
 
 	if os.path.exists(noise_mode+'.jpg'):
 		noise_image = cv2.imread(noise_mode+'.jpg', cv2.IMREAD_GRAYSCALE)
